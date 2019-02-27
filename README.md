@@ -90,6 +90,7 @@ ii
 ```
   storage is the shared folder, to be mounted in all slaves
 iii edit /etc/exports and add a new entry for /home/song/storage as shown:
+
 1 open /etc/exports
 ```g
 sudo nano /etc/exports
@@ -100,17 +101,26 @@ sudo nano /etc/exports
 ```
    Here, instead of * you can specifically give out the IP address to which you want to share this folder to. But, this will just make our job easier.
 
-  -rw: This is to enable both read and write option. ro is for read-only.
-  -sync: This applies changes to the shared directory only after changes are committed.
-  -no_subtree_check: This option prevents the subtree checking. When a shared directory is the subdirectory of a larger filesystem, nfs performs scans of every directory above it, in order to verify its permissions and details. Disabling the subtree check may increase the reliability of NFS, but reduce security.
-  -no_root_squash: This allows root account to connect to the folder.
+   -rw: This is to enable both read and write option. ro is for read-only.
+
+   -sync: This applies changes to the shared directory only after changes are committed.
+
+   -no_subtree_check: This option prevents the subtree checking. When a shared directory is the subdirectory of a larger filesystem, nfs performs scans of every directory above it, in order to verify its permissions and details. Disabling the subtree check may increase the reliability of NFS, but reduce security.
+
+   -no_root_squash: This allows root account to connect to the folder.
 
   3 save & exit
-iv sudo exportfs -a
+
+iv then run the following:
+
+```g
+sudo exportfs -a
+```
 v restart nfs server
 ```g
 sudo service nfs-kernel-server restart
 ```
+
 b In slaves, setup NFS client
 
 i 
