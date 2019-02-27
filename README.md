@@ -75,3 +75,104 @@ fi
 ```
 Exit and login once again or do a source ~/.bashrc for the changes to take effect.
 Now your hostname via ssh command should return the other node's hostname without asking for a password or a passphrase. Check that this works for all the slave nodes.
+
+
+## Setup NFS
+a In master, setup NFS Server
+i
+```g
+ sudo apt-get install nfs-kernel-server
+```
+ii 
+```g
+ mkdir /home/song/storage
+```
+  storage is the shared folder, to be mounted in all slaves
+iii edit /etc/exports and add a new entry for /home/mpiuser/storage as shown
+  1 sudo nano /etc/exports
+  2 /home/song/storage *(rw,sync,no root squash,no subtree check)
+
+   Here, instead of * you can specifically give out the IP address to which you want to share this folder to. But, this will just make our job easier.
+
+  rw: This is to enable both read and write option. ro is for read-only.
+  sync: This applies changes to the shared directory only after changes are committed.
+  no_subtree_check: This option prevents the subtree checking. When a shared directory is the subdirectory of a larger filesystem, nfs performs scans of every directory above it, in order to verify its permissions and details. Disabling the subtree check may increase the reliability of NFS, but reduce security.
+  no_root_squash: This allows root account to connect to the folder.
+
+  3 save & exit
+iv sudo exportfs -a
+v restart nfs server
+```g
+sudo service nfs-kernel-server restart
+```
+b In slaves, setup NFS client
+i 
+```g
+sudo apt-get install nfs-common
+```
+ii
+```g
+ mkdir /home/mpiuser/storage
+```
+storage is the shared folder, to be mounted from master
+
+iii exit (from mpiuser)
+iv add the following entry to /etc/fstab so that the mounting of master’s storage folder to the client will be done everytime the system boots.
+1 sudo nano /etc/fstab
+2 master:/home/song/storage /home/song/storage nfs
+3 save & exit
+vi Restart the slave machine
+
+
+## Testing MPI programs
+Before we need to install MPI in all nodes, here we install PM2: https://gforge.inria.fr/frs/?group_id=30&release_id=10507
+
+a login to master as song
+b cd storage
+c create a program, say helollo.c
+```g
+#include <mpi.h>
+#include <stdio.h>
+
+int main(int argc, char** argv) {
+    // Initialize the MPI environment
+    MPI_Init(NULL, NULL);
+
+    // Get the number of processes
+    int world_size;
+    MPI_Comm_size(MPI_COMM_WORLD, &world_size);
+
+    // Get the rank of the process
+    int world_rank;
+    MPI_Comm_rank(MPI_COMM_WORLD, &world_rank);
+
+    // Get the name of the processor
+    char processor_name[MPI_MAX_PROCESSOR_NAME];
+    int name_len;
+    MPI_Get_processor_name(processor_name, &name_len);
+
+    // Print off a hello world message
+    printf("Hello world from processor %s, rank %d out of %d processors\n",
+           processor_name, world_rank, world_size);
+
+    // Finalize the MPI environment.
+    MPI_Finalize();
+}
+```
+d mpicc hello.c -o hello
+e mpirun  --hosts master,slave1 ./hello
+
+Or 
+
+Create a file called "machinefile" in the program folder:
+```g
+master 
+slave1 
+slave2
+slave1
+slave2 
+... 
+```
+mpirun -f machinefile ./hello
+
+
