@@ -79,6 +79,7 @@ Now your hostname via ssh command should return the other node's hostname withou
 
 ## Setup NFS
 a In master, setup NFS Server
+
 i
 ```g
  sudo apt-get install nfs-kernel-server
@@ -91,14 +92,14 @@ ii
 iii edit /etc/exports and add a new entry for /home/mpiuser/storage as shown
   1 sudo nano /etc/exports
   2 /home/song/storage *(rw,sync,no root squash,no subtree check)
-
+```g
    Here, instead of * you can specifically give out the IP address to which you want to share this folder to. But, this will just make our job easier.
 
-  rw: This is to enable both read and write option. ro is for read-only.
-  sync: This applies changes to the shared directory only after changes are committed.
-  no_subtree_check: This option prevents the subtree checking. When a shared directory is the subdirectory of a larger filesystem, nfs performs scans of every directory above it, in order to verify its permissions and details. Disabling the subtree check may increase the reliability of NFS, but reduce security.
-  no_root_squash: This allows root account to connect to the folder.
-
+  -rw: This is to enable both read and write option. ro is for read-only.
+  -sync: This applies changes to the shared directory only after changes are committed.
+  -no_subtree_check: This option prevents the subtree checking. When a shared directory is the subdirectory of a larger filesystem, nfs performs scans of every directory above it, in order to verify its permissions and details. Disabling the subtree check may increase the reliability of NFS, but reduce security.
+  -no_root_squash: This allows root account to connect to the folder.
+```
   3 save & exit
 iv sudo exportfs -a
 v restart nfs server
@@ -106,13 +107,14 @@ v restart nfs server
 sudo service nfs-kernel-server restart
 ```
 b In slaves, setup NFS client
+
 i 
 ```g
 sudo apt-get install nfs-common
 ```
 ii
 ```g
- mkdir /home/mpiuser/storage
+ mkdir /home/song/storage
 ```
 storage is the shared folder, to be mounted from master
 
