@@ -7,11 +7,15 @@ The following is done with two same system (Ubuntu 18.04).
 Master machine may be named master and slaves as slave1,slave2,.. The following shows the
 modifications in master system. The same should be done on all slaves.
 
-a sudo nano hostname
-b replace the current hostname with master, save and exit
-c sudo nano /etc/hosts
+a. sudo nano hostname
+
+b. replace the current hostname with master, save and exit
+
+c. sudo nano /etc/hosts
+
+ i
 ```g
-  i Give name and IP address of all nodes in the cluster
+  Give name and IP address of all nodes in the cluster
     For example, in master
          127.0.0.1 localhost
          192.168.1.69 master
@@ -23,17 +27,24 @@ c sudo nano /etc/hosts
          192.168.1.69 master
          192.168.1.53 slave1
 ```
+
  ii Comment out (#) any other entries starting with 127.
     e.g. #127.0.1.1 administrator-system-product-name
 
  iii keep other entries in tact
-d Restart the system
+
+
+d. Restart the system
 
 
 #### 2 Add the same user mpiuser in all nodes (optional)
-a sudo adduser mpiuser
-b Set the password
-c Just press Enter for all other fields
+
+a. sudo adduser mpiuser
+
+b. Set the password
+
+c. Just press Enter for all other fields
+
 We did not do this step, because all systems are same (clone), having same user.
 
 #### 3. Installing SSH Server
@@ -45,6 +56,7 @@ If we want to unistall openssh-server, we can use command:
 ```g
 sudo apt-get --purge remove openssh-server
 ```
+
 #### 4. Setting up passwordless SSH for communication between nodes
 i. we generate an RSA key pair
 ```g
@@ -62,9 +74,11 @@ ssh slave1
 ssh slave2
 ```
 iv. Keychain
-If you are asked to enter a passphrase every time, you need to set up a keychain. This is done easily by installing... Keychain.
 
+If you are asked to enter a passphrase every time, you need to set up a keychain. This is done easily by installing... Keychain.
+```g
 sudo apt-get install keychain
+```
 And to tell it where your keys are and to start an ssh-agent automatically edit your ~/.bashrc file to contain the following lines (where id_rsa is the name of your private key file):
 ```g
 if type keychain >/dev/null 2>/dev/null; then
@@ -74,11 +88,12 @@ if type keychain >/dev/null 2>/dev/null; then
 fi
 ```
 Exit and login once again or do a source ~/.bashrc for the changes to take effect.
+
 Now your hostname via ssh command should return the other node's hostname without asking for a password or a passphrase. Check that this works for all the slave nodes.
 
 
 ## Setup NFS
-a In master, setup NFS Server
+a. In master, setup NFS Server
 
 i
 ```g
@@ -89,6 +104,7 @@ ii
  mkdir /home/song/storage
 ```
   storage is the shared folder, to be mounted in all slaves
+
 iii edit /etc/exports and add a new entry for /home/song/storage as shown:
 
 1 open /etc/exports
@@ -121,7 +137,7 @@ v restart nfs server
 sudo service nfs-kernel-server restart
 ```
 
-b In slaves, setup NFS client
+b. In slaves, setup NFS client
 
 i 
 ```g
@@ -133,20 +149,27 @@ ii
 ```
 storage is the shared folder, to be mounted from master
 
-iii exit (from mpiuser)
+iii exit (from song)
+
 iv add the following entry to /etc/fstab so that the mounting of master’s storage folder to the client will be done everytime the system boots.
+
 1 sudo nano /etc/fstab
+
 2 master:/home/song/storage /home/song/storage nfs
+
 3 save & exit
+
 vi Restart the slave machine
 
 
 ## Testing MPI programs
 Before we need to install MPI in all nodes, here we install PM2: https://gforge.inria.fr/frs/?group_id=30&release_id=10507
 
-a login to master as song
-b cd storage
-c create a program, say helollo.c
+a. login to master as song
+
+b. cd storage
+
+c. create a program, say helollo.c
 ```g
 #include <mpi.h>
 #include <stdio.h>
@@ -176,8 +199,8 @@ int main(int argc, char** argv) {
     MPI_Finalize();
 }
 ```
-d mpicc hello.c -o hello
-e mpirun  --hosts master,slave1 ./hello
+d. mpicc hello.c -o hello
+e. mpirun  --hosts master,slave1 ./hello
 
 Or 
 
