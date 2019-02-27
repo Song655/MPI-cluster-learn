@@ -1,9 +1,9 @@
 # MPI-cluster-learn
 
-##Setting up an MPI Cluster in Ubuntu
+## Setting up an MPI Cluster in Ubuntu
 The following is done with two same system (Ubuntu 18.04).
 
-####1. Rename Hosts to ensure unique names in the cluster.
+#### 1. Rename Hosts to ensure unique names in the cluster.
 Master machine may be named master and slaves as slave1,slave2,.. The following shows the
 modifications in master system. The same should be done on all slaves.
 
@@ -30,13 +30,13 @@ c sudo nano /etc/hosts
 d Restart the system
 
 
-####2 Add the same user mpiuser in all nodes (optional)
+#### 2 Add the same user mpiuser in all nodes (optional)
 a sudo adduser mpiuser
 b Set the password
 c Just press Enter for all other fields
 We did not do this step, because all systems are same (clone), having same user.
 
-####3. Installing SSH Server
+#### 3. Installing SSH Server
 Run this command in all nodes in order to install OpenSSH Server
 ```g
 sudo apt­-get install openssh-server
@@ -45,7 +45,7 @@ If we want to unistall openssh-server, we can use command:
 ```g
 sudo apt-get --purge remove openssh-server
 ```
-####4. Setting up passwordless SSH for communication between nodes
+#### 4. Setting up passwordless SSH for communication between nodes
 i. we generate an RSA key pair
 ```g
 ssh­-keygen ­-t rsa
