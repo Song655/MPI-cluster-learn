@@ -113,7 +113,7 @@ sudo nano /etc/exports
 ```
 2 add the following:
 ```g
- /home/song/storage *(rw,sync,no root squash,no subtree check)
+  /home/song/storage *(rw,sync,no_root_squash,no_subtree_check)
 ```
    Here, instead of * you can specifically give out the IP address to which you want to share this folder to. But, this will just make our job easier.
 
